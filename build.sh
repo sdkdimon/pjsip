@@ -48,10 +48,12 @@ function openh264() {
 
     OPENH264_ENABLED=1
 }
+# libyuv
+LIBYUV_DIR="${BUILD_DIR}/libyuv"
 
 PJSIP_DIR="${BUILD_DIR}/pjproject"
 function pjsip() {
-    "${__DIR__}/pjsip.sh" "${PJSIP_DIR}" --with-openssl "${OPENSSL_DIR}" --with-openh264 "${OPENH264_DIR}"
+    "${__DIR__}/pjsip.sh" "${PJSIP_DIR}" --with-openssl "${OPENSSL_DIR}" --with-openh264 "${OPENH264_DIR}" --with-libyuv "${LIBYUV_DIR}"
 }
 
 openssl

@@ -81,7 +81,18 @@ function headers() {
     cp -R "${BASEDIR_PATH}/build/${ARCH}/include/" "${BASEDIR_PATH}/include/"
 }
 
+function lib() {
+    ARCH=$1
+    echo "Copying lib to ${BASEDIR_PATH}/library..."
+    if [ ! -d "${BASEDIR_PATH}/lib" ]; then
+        mkdir -p "${BASEDIR_PATH}/lib"
+    fi
+    cp -R "${BASEDIR_PATH}/build/${ARCH}/lib/" "${BASEDIR_PATH}/lib/"
+}
+
 download ${TARGET_URL} ${TARGET_PATH}
-build armv7 && build armv7s && build arm64 && build i386 && build x86_64
-lipo armv7 armv7s arm64 i386 x86_64
-headers arm64
+build armv7 #&& build armv7s && build arm64 && build i386 && build x86_64
+#lipo armv7 armv7s arm64 i386 x86_64
+headers armv7
+lib armv7
+

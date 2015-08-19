@@ -11,7 +11,7 @@ function download() {
 }
 
 BASE_DIR="$1"
-PJSIP_URL="http://www.pjsip.org/release/2.3/pjproject-2.3.tar.bz2"
+PJSIP_URL="http://www.pjsip.org/release/2.4.5/pjproject-2.4.5.tar.bz2"
 PJSIP_DIR="$1/src"
 LIB_PATHS=("pjlib/lib" \
            "pjlib-util/lib" \
@@ -22,6 +22,7 @@ LIB_PATHS=("pjlib/lib" \
 
 OPENSSL_PREFIX=
 OPENH264_PREFIX=
+LIBYUV_PREFIX=
 while [ "$#" -gt 0 ]; do
     case $1 in
         --with-openssl)
@@ -41,6 +42,16 @@ while [ "$#" -gt 0 ]; do
                 continue
             else
                 echo 'ERROR: Must specify a non-empty "--with-openh264 PREFIX" argument.' >&2
+                exit 1
+            fi
+            ;;
+        --with-libyuv)
+            if [ "$#" -gt 1 ]; then
+                LIBYUV_PREFIX=$2
+                shift 2
+                continue
+            else
+                echo 'ERROR: Must specify a non-empty "--with-libyuv PREFIX" argument.' >&2
                 exit 1
             fi
             ;;
@@ -103,6 +114,9 @@ function _build() {
     if [[ ${OPENH264_PREFIX} ]]; then
         CONFIGURE="${CONFIGURE} --with-openh264=${OPENH264_PREFIX}"
     fi
+    if [[ ${LIBYUV_PREFIX} ]]; then
+        CONFIGURE="${CONFIGURE} --with-libyuv=${LIBYUV_PREFIX}"
+    fi
 
     # flags
     if [[ ! ${CFLAGS} ]]; then
@@ -118,6 +132,10 @@ function _build() {
     if [[ ${OPENH264_PREFIX} ]]; then
         export CFLAGS="${CFLAGS} -I${OPENH264_PREFIX}/include"
         export LDFLAGS="${LDFLAGS} -L${OPENH264_PREFIX}/lib"
+    fi
+    if [[ ${LIBYUV_PREFIX} ]]; then
+        export CFLAGS="${CFLAGS} -I${LIBYUV_PREFIX}/include"
+        export LDFLAGS="${LDFLAGS} -L${LIBYUV_PREFIX}/lib"
     fi
     export LDFLAGS="${LDFLAGS} -lstdc++"
 
@@ -201,5 +219,5 @@ function lipo() {
 
 download "${PJSIP_URL}" "${PJSIP_DIR}"
 config_site "${PJSIP_DIR}"
-armv7 && armv7s && arm64 && i386 && x86_64
-lipo armv7 armv7s arm64 i386 x86_64
+armv7 #&& armv7s && arm64 && i386 && x86_64
+#lipo armv7 armv7s arm64 i386 x86_64
